@@ -29,15 +29,17 @@ public class Client {
 
     private String userName;
 
-    private String email;
-
     private String password;
+
+    private String role;
+
+    private String email;
 
     private String phone_number;
 
     private boolean IsVIP;
 
-    private Instant registrationDate;
+    private Instant registrationDate = Instant.now();
 
     private boolean IsActive;
 

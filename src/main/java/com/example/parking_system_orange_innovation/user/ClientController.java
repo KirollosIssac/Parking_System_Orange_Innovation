@@ -1,6 +1,11 @@
 package com.example.parking_system_orange_innovation.user;
 
+import com.example.parking_system_orange_innovation.dto.ClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +18,17 @@ public class ClientController {
     @Autowired
     private final ClientService clientService;
 
+    @Autowired
+    private final AuthenticationManager authenticationManager;
 
-    public ClientController(ClientService clientService) {
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
+
+    public ClientController(ClientService clientService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.clientService = clientService;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/getClients")
@@ -24,8 +37,21 @@ public class ClientController {
     }
 
     @PostMapping("/addClient")
-    public Client addClient(@RequestBody Client client) throws UserNameExistsException, EmailExistsException, WeakPasswordException {
-        return clientService.addClient(client);
+    public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) throws UserNameExistsException, EmailExistsException, WeakPasswordException {
+        if (clientService.existsByUserName(clientDTO.getUserName())) {
+            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+        }
+        Client client = Client.builder().name(clientDTO.getName())
+                .userName(clientDTO.getUserName())
+                .password(passwordEncoder.encode(clientDTO.getPassword()))
+                .email(clientDTO.getEmail())
+                .phone_number(clientDTO.getPhone_number())
+                .IsVIP(clientDTO.isIsVIP())
+                .registrationDate(clientDTO.getRegistrationDate())
+                .IsActive(clientDTO.isIsActive())
+                .build();
+        clientService.addClient(client);
+        return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
 
     @PutMapping("/updateClient")

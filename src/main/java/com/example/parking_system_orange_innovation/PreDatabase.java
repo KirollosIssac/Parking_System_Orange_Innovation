@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,11 +28,15 @@ public class PreDatabase {
     @Autowired
     private final ParkingRepository parkingRepository;
 
-    public PreDatabase(CarRepository carRepository, SlotRepository slotRepository, ClientRepository clientRepository, ParkingRepository parkingRepository) {
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
+    public PreDatabase(CarRepository carRepository, SlotRepository slotRepository, ClientRepository clientRepository, ParkingRepository parkingRepository, PasswordEncoder passwordEncoder) {
         this.carRepository = carRepository;
         this.slotRepository = slotRepository;
         this.clientRepository = clientRepository;
         this.parkingRepository = parkingRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
@@ -40,11 +45,11 @@ public class PreDatabase {
         return args -> {
 
             Client RECORD_1 = Client.builder().name("Kirollos").userName("KirollosIssac").email("KirollosIssac@gmail.com")
-                    .password("Kirollos").phone_number("01150901394").IsVIP(false)
-                    .registrationDate(Instant.now()).IsActive(true).build();
+                    .password(passwordEncoder.encode("Kirollos")).phone_number("01150901394").IsVIP(false)
+                    .registrationDate(Instant.now()).IsActive(true).role("CLIENT").build();
             Client RECORD_2 = Client.builder().name("George").userName("GeorgeIssac").email("GeorgeIssac@gmail.com")
-                    .password("George").phone_number("01118067093").IsVIP(true)
-                    .registrationDate(Instant.now()).IsActive(true).build();
+                    .password(passwordEncoder.encode("George")).phone_number("01118067093").IsVIP(true)
+                    .registrationDate(Instant.now()).IsActive(true).role("CLIENT").build();
 
             clientRepository.saveAll(List.of(RECORD_1, RECORD_2));
 

@@ -27,6 +27,10 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
+    public boolean existsByUserName(String userName) {
+        return clientRepository.existsByUserName(userName);
+    }
+
     @Transactional
     public Car assignCarToClient(Long clientID, Car car) {
         Optional<Client> optionalClient = clientRepository.findById(clientID);

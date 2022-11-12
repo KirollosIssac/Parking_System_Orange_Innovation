@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Client client = clientRepository.findClientByUserName(username).orElseThrow(
                  () -> new UsernameNotFoundException("username not found!"));
-        return new User(client.getUserName(), client.getPassword(), mapRolesToAuthorities("CLIENT"));
+        return new User(client.getUserName(), client.getPassword(), mapRolesToAuthorities(client.getRole()));
     }
 
     private List<GrantedAuthority> mapRolesToAuthorities(String role) {
