@@ -1,6 +1,8 @@
 package com.example.parking_system_orange_innovation.user;
 
+import com.example.parking_system_orange_innovation.dto.AuthResponseDTO;
 import com.example.parking_system_orange_innovation.dto.LoginDTO;
+import com.example.parking_system_orange_innovation.security.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,21 +29,25 @@ public class AuthController {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private final Jwt jwt;
 
-    public AuthController(ClientService clientService, AdminService adminService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public AuthController(ClientService clientService, AdminService adminService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, Jwt jwt) {
         this.clientService = clientService;
         this.adminService = adminService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.jwt = jwt;
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User signed success!", HttpStatus.OK);
+        String token = jwt.generateToken(authentication);
+        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
     }
 
 }

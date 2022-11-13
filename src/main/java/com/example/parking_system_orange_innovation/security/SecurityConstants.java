@@ -8,7 +8,8 @@ import java.time.Instant;
 
 public class SecurityConstants {
     public static final long JWT_EXPIRATION = 7000;
-    public static final String JWT_SECRET = "OnlineParkingSystemJWTSECRETKEY";
+    public static final String JWT_SECRET = "klgfhdjklghfjkdhgjkfdhgjjsdokjfljkdfhgurdshnghjuvugjkdhbgjkdgksahfnskf" +
+            "lkldfhgjkdfshfurdsilkfjkldsngkhfgljkdskljgikfjlkdngvbjghfdgndjckhbgjkfnjdghljdxkngjshdnljg";
 
     static byte[] keyBytes = Decoders.BASE64.decode(SecurityConstants.JWT_SECRET);
     public static final Key JWT_KEY = Keys.hmacShaKeyFor(keyBytes);
