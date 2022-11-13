@@ -16,15 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    @Autowired
-    private final CustomUserDetailsService customUserDetailsService;
-
     @Autowired
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtAuthEntryPoint jwtAuthEntryPoint) {
-        this.customUserDetailsService = customUserDetailsService;
+    public SecurityConfig(JwtAuthEntryPoint jwtAuthEntryPoint) {
         this.jwtAuthEntryPoint = jwtAuthEntryPoint;
     }
 
@@ -41,11 +36,12 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/cars/getCars").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
 
-        http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 
@@ -59,11 +55,15 @@ public class SecurityConfig {
     }
 
     @Bean
-
     public PasswordEncoder passwordEncoder() {
 
         return new BCryptPasswordEncoder();
 
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 
 }

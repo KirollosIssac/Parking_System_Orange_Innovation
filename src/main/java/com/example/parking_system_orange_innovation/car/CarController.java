@@ -1,6 +1,7 @@
 package com.example.parking_system_orange_innovation.car;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class CarController {
     @Autowired
     private CarService carService;
 
+    @PreAuthorize("ADMIN")
     @GetMapping("/getCars")
     public List<Car> getAllCars() {
         return carService.getAllCars();
