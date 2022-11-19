@@ -1,6 +1,5 @@
 package com.example.parking_system_orange_innovation.user;
 
-import com.example.parking_system_orange_innovation.car.Car;
 import com.example.parking_system_orange_innovation.car.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,16 +14,16 @@ public class ClientService {
     @Autowired
     private final ClientRepository clientRepository;
 
-    @Autowired
-    private final CarRepository carRepository;
-
-    public ClientService(ClientRepository clientRepository, CarRepository carRepository) {
+    public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-        this.carRepository = carRepository;
     }
 
     public List<Client> getAllClients() {
         return clientRepository.findAll();
+    }
+
+    public Optional<Client> getCarOwner(Long carId) {
+        return clientRepository.findClientByCar_Id(carId);
     }
 
     public boolean existsByUserName(String userName) {
@@ -32,11 +31,11 @@ public class ClientService {
     }
 
     @Transactional
-    public Car assignCarToClient(Long clientID, Car car) {
+    /*public Car assignCarToClient(Long clientID, Car car) {
         Optional<Client> optionalClient = clientRepository.findById(clientID);
-        optionalClient.get().getCars().add(car);
+        optionalClient.get().getCar().add(car);
         return car;
-    }
+    }*/
 
     public Client addClient(Client client) throws UserNameExistsException, EmailExistsException, WeakPasswordException {
         Optional<Client> optionalClient = clientRepository.findClientByUserName(client.getUserName());
@@ -55,13 +54,24 @@ public class ClientService {
     @Transactional
     public Optional<Client> updateClient(Client client) {
         Optional<Client> optionalClient = clientRepository.findById(client.getId());
-        optionalClient.get().setCars(client.getCars());
+        if (!optionalClient.isPresent()){
+            clientRepository.save(client);
+        }else{
+        optionalClient.get().setCar(client.getCar());
         optionalClient.get().setName(client.getName());
-        optionalClient.get().setIsActive(client.isIsActive());
-        optionalClient.get().setIsVIP(client.isIsVIP());
-        optionalClient.get().setPhone_number(client.getPhone_number());
+        optionalClient.get().setIsActive(client.getIsActive());
+//        optionalClient.get().isVip(client.isVip());
+        optionalClient.get().setPhoneNumber(client.getPhoneNumber());
         optionalClient.get().setPassword((client.getPassword()));
+        }
         return optionalClient;
+    }
+
+    @Transactional
+    public void deleteClientCar(Long carId) {
+        Optional<Client> client = getCarOwner(carId);
+        if (client.isPresent())
+            client.get().setCar(null);
     }
 
 }

@@ -1,7 +1,10 @@
 package com.example.parking_system_orange_innovation.car;
 
+import com.example.parking_system_orange_innovation.user.Client;
+import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,23 +15,30 @@ import java.util.Optional;
 public class CarController {
 
     @Autowired
-    private CarService carService;
+    private final CarService carService;
 
-    @PreAuthorize("ADMIN")
-    @GetMapping("/getCars")
-    public List<Car> getAllCars() {
-        return carService.getAllCars();
+    @Autowired
+    private final ClientService clientService;
+
+    public CarController(CarService carService, ClientService clientService) {
+        this.carService = carService;
+        this.clientService = clientService;
     }
 
-    @GetMapping("/getCars/{clientID}")
-    public Optional<Car> getCars(@PathVariable("clientID") Long clientID) {
-        return carService.getCars(clientID);
+    @GetMapping("/getCars")
+    public ResponseEntity<List<Car>> getAllCars() {
+        return new ResponseEntity<>(carService.getAllCars(), HttpStatus.OK);
+    }
+
+    @GetMapping("/getCarOwner/{carId}")
+    public Optional<Client> getCarOwner(@PathVariable("carId") Long carId) {
+        return clientService.getCarOwner(carId);
     }
 
     @PostMapping("/addCar")
-    public Car addCar(@RequestBody Car car) throws CarAlreadyExistsException {
+    public ResponseEntity<Car> addCar(@RequestBody Car car) throws CarAlreadyExistsException {
         carService.addCar(car);
-        return car;
+        return new ResponseEntity<>(car, HttpStatus.OK);
     }
 
     @PutMapping("/updateCar")
@@ -37,8 +47,9 @@ public class CarController {
         return Optional.of(car);
     }
 
-    @DeleteMapping("/deleteCar/{carID}")
-    public void deleteCar(@PathVariable("carID") Long carID) {
-        carService.deleteCar(carID);
+    @DeleteMapping("/deleteCar/{carId}")
+    public void deleteCar(@PathVariable("carId") Long carId) {
+        carService.deleteCar(carId);
     }
+
 }

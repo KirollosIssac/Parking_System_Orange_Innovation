@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +21,8 @@ public class Client {
     )
     private Long id;
 
-    @OneToMany
-    private List<Car> cars;
+    @OneToOne
+    private Car car;
 
     private String name;
 
@@ -35,12 +34,12 @@ public class Client {
 
     private String email;
 
-    private String phone_number;
+    private String phoneNumber;
 
-    private boolean IsVIP;
+    private Boolean isVIP;
 
-    private Instant registrationDate = Instant.now();
+    private Instant registrationDate;
 
-    private boolean IsActive;
+    private Boolean isActive;
 
 }

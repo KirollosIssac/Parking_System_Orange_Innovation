@@ -8,8 +8,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping(path = "clients")
@@ -36,8 +38,10 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
+    @CrossOrigin()
     @PostMapping("/addClient")
     public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) throws UserNameExistsException, EmailExistsException, WeakPasswordException {
+        System.out.print(clientDTO);
         if (clientService.existsByUserName(clientDTO.getUserName())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
@@ -45,10 +49,10 @@ public class ClientController {
                 .userName(clientDTO.getUserName())
                 .password(passwordEncoder.encode(clientDTO.getPassword()))
                 .email(clientDTO.getEmail())
-                .phone_number(clientDTO.getPhone_number())
-                .IsVIP(clientDTO.isIsVIP())
-                .registrationDate(clientDTO.getRegistrationDate())
-                .IsActive(clientDTO.isIsActive())
+                .phoneNumber(clientDTO.getPhoneNumber())
+                .isVIP(clientDTO.getIsVIP())
+                .registrationDate(Instant.now())
+                .isActive(clientDTO.getIsActive())
                 .build();
         clientService.addClient(client);
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);

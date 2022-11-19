@@ -27,8 +27,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf().disable()
-                .exceptionHandling()
+                .csrf().disable();
+                /*.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthEntryPoint)
                 .and()
                 .sessionManagement()
@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .and()
                 .httpBasic();
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);*/
 
         return http.build();
 

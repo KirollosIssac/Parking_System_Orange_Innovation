@@ -23,12 +23,12 @@ public class ClientDTO {
 
     private String email;
 
-    private String phone_number;
+    private String phoneNumber;
 
-    private boolean IsVIP;
+    private Boolean isVIP;
 
     private Instant registrationDate;
 
-    private boolean IsActive;
+    private Boolean isActive;
 
 }

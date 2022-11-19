@@ -1,11 +1,11 @@
 package com.example.parking_system_orange_innovation.car;
 
+import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,28 +14,30 @@ public class CarService {
     @Autowired
     private final CarRepository carRepository;
 
-    public CarService(CarRepository carRepository) {
+    @Autowired
+    private final ClientService clientService;
+
+    public CarService(CarRepository carRepository, ClientService clientService) {
         this.carRepository = carRepository;
+        this.clientService = clientService;
     }
 
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
 
+    public Optional<Car> getCar(Long id) {
+        return carRepository.findById(id);
+    }
+
     @Transactional
     public Optional<Car> updateCar(Car car) {
-        Optional<Car> optionalCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
-        optionalCar.get().setIsActive(car.isIsActive());
-        optionalCar.get().setIsParked(car.isIsParked());
-        //optionalCar.get().setClient(car.getClient());
-        return optionalCar;
+        Optional<Car> existingCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
+        existingCar.get().setIsParked(car.getIsParked());
+        existingCar.get().setIsActive(car.getIsActive());
+        return existingCar;
     }
 
-    public Optional<Car> getCars(Long clientID) {
-        return carRepository.getCars(clientID);
-    }
-
-    @Transactional
     public Car addCar(Car car) throws CarAlreadyExistsException {
         Optional<Car> optionalCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
         if (optionalCar.isPresent())
@@ -46,7 +48,10 @@ public class CarService {
         return car;
     }
 
-    public void deleteCar(Long carID) {
-        carRepository.deleteAllById(Collections.singleton(carID));
+    @Transactional
+    public void deleteCar(Long id) {
+        clientService.deleteClientCar(id);
+        carRepository.deleteCarById(id);
     }
+
 }

@@ -1,6 +1,6 @@
 package com.example.parking_system_orange_innovation.car;
 
-import com.example.parking_system_orange_innovation.user.Client;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,17 +24,14 @@ public class Car {
     )
     private Long id;
 
-    @OneToOne
-    private Client client;
-
     private String plateNumber;
 
     private String color;
 
-    private boolean IsParked;
+    private Boolean isParked;
 
     private Instant registrationDate;
 
-    private boolean IsActive;
+    private Boolean isActive;
 
 }

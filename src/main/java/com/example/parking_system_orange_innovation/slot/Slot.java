@@ -23,8 +23,8 @@ public class Slot {
     @OneToOne
     private Car car;
 
-    private boolean IsVIP;
+    private Boolean isVIP;
 
-    private boolean IsAVAILABLE;
+    private Boolean isAvailable;
 
 }

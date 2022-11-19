@@ -1,13 +1,11 @@
 package com.example.parking_system_orange_innovation.parking;
 
-import com.example.parking_system_orange_innovation.car.Car;
 import com.example.parking_system_orange_innovation.slot.Slot;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +24,11 @@ public class Parking {
     @OneToOne
     private Slot slot;
 
-    @OneToOne
-    private Car car;
+    private Long carId;
+
+    private String carPlateNumber;
+
+    private String carColor;
 
     private Instant startParking;
 

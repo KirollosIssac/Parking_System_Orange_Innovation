@@ -2,6 +2,7 @@ package com.example.parking_system_orange_innovation.slot;
 
 import com.example.parking_system_orange_innovation.car.Car;
 import com.example.parking_system_orange_innovation.car.CarRepository;
+import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +20,26 @@ public class SlotService {
     @Autowired
     private final CarRepository carRepository;
 
-    public SlotService(SlotRepository slotRepository, CarRepository carRepository) {
+    @Autowired
+    private final ClientService clientService;
+
+    public SlotService(SlotRepository slotRepository, CarRepository carRepository, ClientService clientService) {
         this.slotRepository = slotRepository;
         this.carRepository = carRepository;
+        this.clientService = clientService;
     }
 
     public List<Slot> getSlots() {
         return slotRepository.findAll();
     }
 
-    /*public List<Slot> getAvailableSlots() {
-        return slotRepository.findSlotsByIsAVAILABLEEquals(true);
-    }*/
+    public Optional<Slot> getSlot(Long id) {
+        return slotRepository.findById(id);
+    }
+
+    public List<Slot> getAvailableSlots() {
+        return slotRepository.findSlotsByIsAvailableIsTrue();
+    }
 
     public Slot addSlot(Slot slot) {
         slotRepository.save(slot);
@@ -41,26 +50,45 @@ public class SlotService {
     public void freeSlots() {
         List<Slot> slots = slotRepository.findAll();
         for (Slot slot: slots) {
-            slot.setIsAVAILABLE(true);
+            slot.setIsAvailable(true);
         }
     }
 
     @Transactional
-    public Slot assignSlot(Slot slot, Car car) throws CarNotFoundException {
-        Optional<Car> optionalCar = carRepository.findById(car.getId());
-        if (!optionalCar.isPresent())
-            throw new CarNotFoundException();
-        slot.setCar(car);
-        slot.setIsAVAILABLE(false);
-        return slot;
+    public void freeSlot(Long slotId) {
+        Optional<Slot> slot = slotRepository.findById(slotId);
+        slot.get().getCar().setIsParked(false);
+        slot.get().setCar(null);
+        slot.get().setIsAvailable(true);
     }
 
     @Transactional
-    public Optional<Slot> updateSlot(Long slotID, Slot slot) {
-        Optional<Slot> optionalSlot = slotRepository.findById(slotID);
-        optionalSlot.get().setIsAVAILABLE(slot.isIsAVAILABLE());
-        optionalSlot.get().setIsVIP(slot.isIsVIP());
+    public Optional<Slot> assignSlot(Long slotId, Long carId) throws CarNotFoundException, VIPSlotException {
+        Optional<Car> optionalCar = carRepository.findById(carId);
+        Optional<Slot> optionalSlot = slotRepository.findById(slotId);
+        if (!optionalCar.isPresent())
+            throw new CarNotFoundException();
+        if (!clientService.getCarOwner(carId).get().getIsVIP() && optionalSlot.get().getIsVIP())
+            throw new VIPSlotException();
+        optionalSlot.get().setCar(optionalCar.get());
+        optionalSlot.get().setIsAvailable(false);
+        optionalCar.get().setIsParked(true);
         return optionalSlot;
+    }
+
+    @Transactional
+    public Optional<Slot> updateSlot(Slot slot) {
+        Optional<Slot> optionalSlot = slotRepository.findById(slot.getId());
+        optionalSlot.get().setIsAvailable(slot.getIsAvailable());
+        optionalSlot.get().setIsVIP(slot.getIsVIP());
+        return optionalSlot;
+    }
+
+    @Transactional
+    public void deleteSlot(Long slotId) {
+        Optional<Slot> optionalSlot = slotRepository.findById(slotId);
+        optionalSlot.get().getCar().setIsParked(false);
+        slotRepository.deleteById(slotId);
     }
 
 }

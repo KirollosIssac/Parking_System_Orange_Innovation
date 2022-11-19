@@ -1,6 +1,5 @@
 package com.example.parking_system_orange_innovation.slot;
 
-import com.example.parking_system_orange_innovation.car.Car;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,19 +22,14 @@ public class SlotController {
         return slotService.getSlots();
     }
 
-    /*@GetMapping("/getAvailableSlots")
+    @GetMapping("/getAvailableSlots")
     public List<Slot> getAvailableSlots() {
         return slotService.getAvailableSlots();
-    }*/
+    }
 
     @PostMapping("/addSlot")
     public Slot addSlot(@RequestBody Slot slot) {
         return slotService.addSlot(slot);
-    }
-
-    @PutMapping("/assignSlot")
-    public Slot assignSlot(@RequestBody Slot slot, @RequestBody Car car) throws CarNotFoundException{
-        return slotService.assignSlot(slot, car);
     }
 
     @PutMapping("/freeSlots")
@@ -43,9 +37,19 @@ public class SlotController {
         slotService.freeSlots();
     }
 
-    @PutMapping("/updateSlots/{slotID}")
-    public Optional<Slot> updateSlots(@PathVariable("slotID") Long slotID, @RequestBody Slot slot) {
-        return slotService.updateSlot(slotID, slot);
+    @PutMapping("/updateSlot")
+    public Optional<Slot> updateSlots(@RequestBody Slot slot) {
+        return slotService.updateSlot(slot);
+    }
+
+    @PutMapping("/assignSlot/{slotId}/{carId}")
+    public Optional<Slot> assignSlot(@PathVariable("slotId") Long slotId, @PathVariable("carId") Long carId) throws VIPSlotException, CarNotFoundException {
+        return slotService.assignSlot(slotId, carId);
+    }
+
+    @DeleteMapping("/deleteSlot/{slotId}")
+    public void deleteSlot(@PathVariable("slotId") Long slotId) {
+        slotService.deleteSlot(slotId);
     }
 
 }

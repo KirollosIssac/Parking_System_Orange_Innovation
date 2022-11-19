@@ -1,5 +1,8 @@
 package com.example.parking_system_orange_innovation.parking;
 
+import com.example.parking_system_orange_innovation.dto.SlotCarDTO;
+import com.example.parking_system_orange_innovation.slot.CarNotFoundException;
+import com.example.parking_system_orange_innovation.slot.VIPSlotException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,20 +25,19 @@ public class ParkingController {
         return parkingService.getAllParkings();
     }
 
-    @GetMapping(path = "/clientHistory/{clientID}")
-    public Optional<Parking> getCLientParkings (@PathVariable("clientID") Long clientID) {
-        return parkingService.clientHistory(clientID);
-    }
-
     @GetMapping(path = "/carHistory/{carID}")
-    public Optional<Parking> getCarParkings (@PathVariable("carID") Long carID) {
+    public List<Parking> getCarParkings (@PathVariable("carID") Long carID) {
         return parkingService.carHistory(carID);
     }
 
     @PostMapping(path = "/addParking")
-    public Parking addParking(@RequestBody Parking parking) throws VIPSlotException {
-        parkingService.addParking(parking);
-        return parking;
+    public Parking addParking(@RequestBody SlotCarDTO slotCarDTO) throws VIPSlotException, CarNotFoundException {
+        return parkingService.addParking(slotCarDTO.getSlotId(), slotCarDTO.getCarId());
+    }
+
+    @PutMapping(path = "/endParking/{parkingId}")
+    public void endParking(@PathVariable("parkingId") Long parkingId) {
+        parkingService.endParking(parkingId);
     }
 
     @DeleteMapping(path = "/deleteParkings")
