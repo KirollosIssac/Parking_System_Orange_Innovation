@@ -42,6 +42,7 @@ public class CarService {
         Optional<Car> optionalCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
         if (optionalCar.isPresent())
             throw new CarAlreadyExistsException();
+        car.setIsParked(false);
         car.setRegistrationDate(Instant.now());
         car.setIsActive(true);
         carRepository.save(car);
