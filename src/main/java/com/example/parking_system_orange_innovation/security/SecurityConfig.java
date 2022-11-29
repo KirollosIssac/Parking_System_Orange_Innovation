@@ -27,8 +27,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf().disable();
-                /*.exceptionHandling()
+                .csrf().disable()
+                .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthEntryPoint)
                 .and()
                 .sessionManagement()
@@ -36,12 +36,20 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/cars/getCars").hasAuthority("ADMIN")
+                .antMatchers("/cars/**").hasAuthority("ADMIN")
+                .antMatchers("/slots/getSlots").hasAuthority("ADMIN")
+                .antMatchers("/slots/addSlot").hasAuthority("ADMIN")
+                .antMatchers("/slots/freeSlots").hasAuthority("ADMIN")
+                .antMatchers("/slots/updateSlot").hasAuthority("ADMIN")
+                .antMatchers("/slots/assignSlot/**").hasAuthority("ADMIN")
+                .antMatchers("/slots/deleteSlot").hasAuthority("ADMIN")
+                .antMatchers("/slots/getAvailableSlots").hasAuthority("ADMIN")
+                .antMatchers("/clients/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);*/
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

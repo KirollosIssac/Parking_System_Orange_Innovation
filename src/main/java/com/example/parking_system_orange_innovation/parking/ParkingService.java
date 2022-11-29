@@ -39,19 +39,18 @@ public class ParkingService {
     }
 
     public List<Parking> carHistory(Long carID) {
-        return parkingRepository.findParkingsBySlot_Car_Id(carID);
+        return parkingRepository.findParkingsByCarId(carID);
     }
 
     @Transactional
-    public Parking addParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException {
+    public void addParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException {
         Optional<Slot> slot = slotService.getSlot(slotId);
         Optional<Car> car = carService.getCar(carId);
+        slotService.assignSlot(slot.get().getId(), car.get().getId());
         Parking parking = Parking.builder().slot(slot.get()).carId(car.get().getId())
                 .carPlateNumber(car.get().getPlateNumber()).carColor(car.get().getColor())
                 .startParking(Instant.now()).build();
-        slotService.assignSlot(slot.get().getId(), car.get().getId());
         parkingRepository.save(parking);
-        return parking;
     }
 
     @Transactional

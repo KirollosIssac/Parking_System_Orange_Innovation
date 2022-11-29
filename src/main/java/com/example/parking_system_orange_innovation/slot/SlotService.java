@@ -87,7 +87,8 @@ public class SlotService {
     @Transactional
     public void deleteSlot(Long slotId) {
         Optional<Slot> optionalSlot = slotRepository.findById(slotId);
-        optionalSlot.get().getCar().setIsParked(false);
+        if(optionalSlot.get().getCar() != null)
+            optionalSlot.get().getCar().setIsParked(false);
         slotRepository.deleteById(slotId);
     }
 

@@ -1,6 +1,8 @@
 package com.example.parking_system_orange_innovation.slot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +20,47 @@ public class SlotController {
     }
 
     @GetMapping("/getSlots")
-    public List<Slot> getAllSlots() {
-        return slotService.getSlots();
+    public ResponseEntity<List<Slot>> getAllSlots() {
+        return new ResponseEntity<>(slotService.getSlots(), HttpStatus.OK);
     }
 
     @GetMapping("/getAvailableSlots")
-    public List<Slot> getAvailableSlots() {
-        return slotService.getAvailableSlots();
+    public ResponseEntity<List<Slot>> getAvailableSlots() {
+        return new ResponseEntity<>(slotService.getAvailableSlots(), HttpStatus.OK);
     }
 
     @PostMapping("/addSlot")
-    public Slot addSlot(@RequestBody Slot slot) {
-        return slotService.addSlot(slot);
+    public ResponseEntity<String> addSlot(@RequestBody Slot slot) {
+        slotService.addSlot(slot);
+        return new ResponseEntity<>("Slot added successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/freeSlots")
-    public void freeSlots() {
+    public ResponseEntity<String> freeSlots() {
         slotService.freeSlots();
+        return new ResponseEntity<>("Slots are free!", HttpStatus.OK);
     }
 
     @PutMapping("/updateSlot")
-    public Optional<Slot> updateSlots(@RequestBody Slot slot) {
-        return slotService.updateSlot(slot);
+    public ResponseEntity<String> updateSlots(@RequestBody Slot slot) {
+        slotService.updateSlot(slot);
+        return new ResponseEntity<>("Slot updated successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/assignSlot/{slotId}/{carId}")
-    public Optional<Slot> assignSlot(@PathVariable("slotId") Long slotId, @PathVariable("carId") Long carId) throws VIPSlotException, CarNotFoundException {
-        return slotService.assignSlot(slotId, carId);
+    public ResponseEntity<String> assignSlot(@PathVariable("slotId") Long slotId, @PathVariable("carId") Long carId) throws VIPSlotException, CarNotFoundException {
+        try {
+            slotService.assignSlot(slotId, carId);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Slot assigned successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteSlot/{slotId}")
-    public void deleteSlot(@PathVariable("slotId") Long slotId) {
+    public ResponseEntity<String> deleteSlot(@PathVariable("slotId") Long slotId) {
         slotService.deleteSlot(slotId);
+        return new ResponseEntity<>("Slot deleted successfully!", HttpStatus.OK);
     }
 
 }

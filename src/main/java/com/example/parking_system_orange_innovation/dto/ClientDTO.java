@@ -13,6 +13,8 @@ import java.time.Instant;
 @Builder
 public class ClientDTO {
 
+    private Long id;
+
     private String name;
 
     private String userName;

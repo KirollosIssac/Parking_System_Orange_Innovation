@@ -1,5 +1,6 @@
 package com.example.parking_system_orange_innovation.user;
 
+import com.example.parking_system_orange_innovation.dto.ClientCarAssignmentDTO;
 import com.example.parking_system_orange_innovation.dto.ClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,33 +35,59 @@ public class ClientController {
     }
 
     @GetMapping("/getClients")
-    public List<Client> getAllClients() {
-        return clientService.getAllClients();
+    public ResponseEntity<List<Client>> getAllClients() {
+        return new ResponseEntity<>(clientService.getAllClients(), HttpStatus.OK);
     }
 
-    @CrossOrigin()
+    @GetMapping("/getClient")
+    public ResponseEntity<ClientDTO> getClient(@RequestBody String userName) {
+        Optional<Client> client = clientService.getClient(userName);
+        ClientDTO clientDTO = ClientDTO.builder().id(client.get().getId())
+                .userName(client.get().getUserName()).role(client.get().getRole())
+                .isVIP(client.get().getIsVIP()).isActive(client.get().getIsActive()).build();
+        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+    }
+
+
     @PostMapping("/addClient")
-    public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) throws UserNameExistsException, EmailExistsException, WeakPasswordException {
-        System.out.print(clientDTO);
-        if (clientService.existsByUserName(clientDTO.getUserName())) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) {
         Client client = Client.builder().name(clientDTO.getName())
                 .userName(clientDTO.getUserName())
                 .password(passwordEncoder.encode(clientDTO.getPassword()))
                 .email(clientDTO.getEmail())
                 .phoneNumber(clientDTO.getPhoneNumber())
-                .isVIP(clientDTO.getIsVIP())
+                .isVIP(false)
                 .registrationDate(Instant.now())
-                .isActive(clientDTO.getIsActive())
+                .isActive(true)
                 .build();
-        clientService.addClient(client);
+        try {
+            clientService.addClient(client);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
 
     @PutMapping("/updateClient")
-    public Optional<Client> updateClient(@RequestBody Client client) {
-        return clientService.updateClient(client);
+    public ResponseEntity<String> updateClient(@RequestBody Client client) {
+        try {
+            clientService.updateClient(client);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("User updated successfully!", HttpStatus.OK);
+    }
+
+    @PutMapping("/assignCar")
+    public ResponseEntity<String> assignCar(@RequestBody ClientCarAssignmentDTO clientCarAssignmentDTO) {
+        clientService.assignCarToClient(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
+        return new ResponseEntity<>("Car assigned successfully!", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteClient/{clientId}")
+    public ResponseEntity<String> deleteClient(@PathVariable("clientId") Long clientId) {
+        clientService.deleteClient(clientId);
+        return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
     }
 
 }

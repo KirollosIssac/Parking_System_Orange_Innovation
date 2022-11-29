@@ -25,31 +25,40 @@ public class CarController {
         this.clientService = clientService;
     }
 
+
     @GetMapping("/getCars")
     public ResponseEntity<List<Car>> getAllCars() {
         return new ResponseEntity<>(carService.getAllCars(), HttpStatus.OK);
     }
 
     @GetMapping("/getCarOwner/{carId}")
-    public Optional<Client> getCarOwner(@PathVariable("carId") Long carId) {
-        return clientService.getCarOwner(carId);
+    public ResponseEntity<Optional<Client>> getCarOwner(@PathVariable("carId") Long carId) {
+        Optional<Client> optionalClient = clientService.getCarOwner(carId);
+        if (optionalClient.isPresent())
+            return new ResponseEntity<>(optionalClient, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/addCar")
-    public ResponseEntity<Car> addCar(@RequestBody Car car) throws CarAlreadyExistsException {
-        carService.addCar(car);
-        return new ResponseEntity<>(car, HttpStatus.OK);
+    public ResponseEntity<String> addCar(@RequestBody Car car) throws CarAlreadyExistsException {
+        try {
+            carService.addCar(car);
+        } catch (CarAlreadyExistsException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Car added successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/updateCar")
-    public Optional<Car> updateCar(@RequestBody Car car) {
+    public ResponseEntity<String> updateCar(@RequestBody Car car) {
         carService.updateCar(car);
-        return Optional.of(car);
+        return new ResponseEntity<>("Car updated successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteCar/{carId}")
-    public void deleteCar(@PathVariable("carId") Long carId) {
+    public ResponseEntity<String> deleteCar(@PathVariable("carId") Long carId) {
         carService.deleteCar(carId);
+        return new ResponseEntity("Car deleted successfully!", HttpStatus.OK);
     }
 
 }
