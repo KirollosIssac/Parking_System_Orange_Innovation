@@ -40,7 +40,7 @@ public class CarController {
     }
 
     @PostMapping("/addCar")
-    public ResponseEntity<String> addCar(@RequestBody Car car) throws CarAlreadyExistsException {
+    public ResponseEntity<String> addCar(@RequestBody Car car) {
         try {
             carService.addCar(car);
         } catch (CarAlreadyExistsException exception) {
