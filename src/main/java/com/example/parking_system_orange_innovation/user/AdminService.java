@@ -1,5 +1,6 @@
 package com.example.parking_system_orange_innovation.user;
 
+import com.example.parking_system_orange_innovation.dto.CurrentAdminDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,12 @@ public class AdminService {
 
     public List<Admin> getAllAdmins() {
         return adminRepository.findAll();
+    }
+
+    public CurrentAdminDTO getCurrentAdmin(String userName) {
+        Admin admin = adminRepository.getAdminByUserName(userName);
+        CurrentAdminDTO currentAdminDTO = CurrentAdminDTO.builder().userId(admin.getId()).build();
+        return currentAdminDTO;
     }
 
     public Admin addAdmin(Admin admin) {

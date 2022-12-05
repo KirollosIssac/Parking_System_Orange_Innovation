@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
         http
                 .csrf().disable()
+                .cors()
+                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthEntryPoint)
                 .and()
@@ -35,17 +38,18 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/cars/**").hasAuthority("ADMIN")
-                .antMatchers("/slots/getSlots").hasAuthority("ADMIN")
-                .antMatchers("/slots/addSlot").hasAuthority("ADMIN")
-                .antMatchers("/slots/freeSlots").hasAuthority("ADMIN")
-                .antMatchers("/slots/updateSlot").hasAuthority("ADMIN")
-                .antMatchers("/slots/assignSlot/**").hasAuthority("ADMIN")
-                .antMatchers("/slots/deleteSlot").hasAuthority("ADMIN")
-                .antMatchers("/slots/getAvailableSlots").hasAuthority("ADMIN")
-                .antMatchers("/clients/**").hasAuthority("ADMIN")
+                .antMatchers("/auth/login").permitAll()
+//                .antMatchers("/cars/**").hasAuthority("ADMIN")
+//                .antMatchers("/clients/**").hasAuthority("ADMIN")
+//                .antMatchers("/slots/getSlots").hasAuthority("ADMIN")
+//                .antMatchers("/slots/addSlot").hasAuthority("ADMIN")
+//                .antMatchers("/slots/freeSlots").hasAuthority("ADMIN")
+//                .antMatchers("/slots/updateSlot").hasAuthority("ADMIN")
+//                .antMatchers("/slots/assignSlot/**").hasAuthority("ADMIN")
+//                .antMatchers("/slots/deleteSlot").hasAuthority("ADMIN")
+//                .antMatchers("/slots/getAvailableSlots").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
+
                 .and()
                 .httpBasic();
 

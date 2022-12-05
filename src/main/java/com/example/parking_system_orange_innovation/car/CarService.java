@@ -2,6 +2,7 @@ package com.example.parking_system_orange_innovation.car;
 
 import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,6 +24,7 @@ public class CarService {
     }
 
     public List<Car> getAllCars() {
+        //System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toArray()[0]);
         return carRepository.findAll();
     }
 

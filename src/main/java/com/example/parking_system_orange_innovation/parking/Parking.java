@@ -34,4 +34,6 @@ public class Parking {
 
     private Instant endParking;
 
+    private Boolean isFinished;
+
 }

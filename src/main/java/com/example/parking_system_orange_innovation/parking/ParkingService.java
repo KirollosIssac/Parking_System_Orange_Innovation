@@ -49,14 +49,15 @@ public class ParkingService {
         slotService.assignSlot(slot.get().getId(), car.get().getId());
         Parking parking = Parking.builder().slot(slot.get()).carId(car.get().getId())
                 .carPlateNumber(car.get().getPlateNumber()).carColor(car.get().getColor())
-                .startParking(Instant.now()).build();
+                .startParking(Instant.now()).isFinished(false).build();
         parkingRepository.save(parking);
     }
 
     @Transactional
-    public void endParking(Long parkingId) {
-        Optional<Parking> parking = parkingRepository.findById(parkingId);
+    public void endParking(Long carId) {
+        Optional<Parking> parking = parkingRepository.findParkingByCarIdAndIsFinishedIsFalse(carId);
         slotService.freeSlot(parking.get().getSlot().getId());
+        parking.get().setIsFinished(true);
         parking.get().setEndParking(Instant.now());
     }
 

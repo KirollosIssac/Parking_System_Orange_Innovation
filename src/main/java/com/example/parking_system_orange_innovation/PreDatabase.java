@@ -48,10 +48,10 @@ public class PreDatabase {
 
             Client RECORD_1 = Client.builder().name("Kirollos").userName("KirollosIssac").email("KirollosIssac@gmail.com")
                     .password(passwordEncoder.encode("Kirollos")).phoneNumber("01150901394").isVIP(false)
-                    .registrationDate(Instant.now()).isActive(true).role("ADMIN").car(RECORD_3).build();
+                    .registrationDate(Instant.now()).isActive(true).role("CLIENT").car(RECORD_3).build();
             Client RECORD_2 = Client.builder().name("George").userName("GeorgeIssac").email("GeorgeIssac@gmail.com")
                     .password(passwordEncoder.encode("George")).phoneNumber("01118067093").isVIP(true)
-                    .registrationDate(Instant.now()).isActive(true).role("CLIENT").build();
+                    .registrationDate(Instant.now()).isActive(true).role("CLIENT").car(RECORD_4).build();
 
             clientRepository.saveAll(List.of(RECORD_1, RECORD_2));
 

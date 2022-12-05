@@ -29,6 +29,11 @@ public class SlotController {
         return new ResponseEntity<>(slotService.getAvailableSlots(), HttpStatus.OK);
     }
 
+    @GetMapping("/getAvailableVIPSlots")
+    public ResponseEntity<List<Slot>> getAvailableVIPSlots() {
+        return new ResponseEntity<>(slotService.getAvailableVIPSlots(), HttpStatus.OK);
+    }
+
     @PostMapping("/addSlot")
     public ResponseEntity<String> addSlot(@RequestBody Slot slot) {
         slotService.addSlot(slot);

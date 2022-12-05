@@ -2,10 +2,12 @@ package com.example.parking_system_orange_innovation.user;
 
 import com.example.parking_system_orange_innovation.dto.ClientCarAssignmentDTO;
 import com.example.parking_system_orange_innovation.dto.ClientDTO;
+import com.example.parking_system_orange_innovation.dto.CurrentClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +50,11 @@ public class ClientController {
         return new ResponseEntity<>(clientDTO, HttpStatus.OK);
     }
 
+    @GetMapping("/getCurrentUser")
+    public ResponseEntity<CurrentClientDTO> getCurrentClient() {
+        return new ResponseEntity<>(clientService.getCurrentClient(SecurityContextHolder.getContext()
+                .getAuthentication().getName()), HttpStatus.OK);
+    }
 
     @PostMapping("/addClient")
     public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) {

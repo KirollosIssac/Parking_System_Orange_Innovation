@@ -2,10 +2,13 @@ package com.example.parking_system_orange_innovation.user;
 
 import com.example.parking_system_orange_innovation.dto.AuthResponseDTO;
 import com.example.parking_system_orange_innovation.dto.LoginDTO;
+import com.example.parking_system_orange_innovation.dto.RoleDTO;
 import com.example.parking_system_orange_innovation.security.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +43,7 @@ public class AuthController {
         this.jwt = jwt;
     }
 
-    @CrossOrigin
+
     @PostMapping(path = "/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -51,4 +54,10 @@ public class AuthController {
         return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/getRole")
+    public  ResponseEntity<RoleDTO> getRole() {
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toArray()[0].toString();
+        RoleDTO roleDTO = new RoleDTO(role);
+        return new ResponseEntity<>(roleDTO, HttpStatus.OK);
+    }
 }

@@ -38,7 +38,11 @@ public class SlotService {
     }
 
     public List<Slot> getAvailableSlots() {
-        return slotRepository.findSlotsByIsAvailableIsTrue();
+        return slotRepository.findSlotsByIsAvailableIsTrueAndIsVIPIsFalse();
+    }
+
+    public List<Slot> getAvailableVIPSlots() {
+        return slotRepository.findSlotsByIsAvailableIsTrueAndIsVIPIsTrue();
     }
 
     public Slot addSlot(Slot slot) {

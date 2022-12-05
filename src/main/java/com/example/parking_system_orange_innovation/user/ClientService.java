@@ -2,6 +2,7 @@ package com.example.parking_system_orange_innovation.user;
 
 import com.example.parking_system_orange_innovation.car.Car;
 import com.example.parking_system_orange_innovation.car.CarRepository;
+import com.example.parking_system_orange_innovation.dto.CurrentClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,15 @@ public class ClientService {
 
     public Optional<Client> getClient(String userName) {
         return clientRepository.findClientByUserName(userName);
+    }
+
+    public CurrentClientDTO getCurrentClient(String userName) {
+        Optional<Client> optionalClient = clientRepository.findClientByUserName(userName);
+        CurrentClientDTO currentClientDTO = CurrentClientDTO.builder().userId(optionalClient.get().getId())
+                .userName(userName).isVIP(optionalClient.get().getIsVIP()).isActive(optionalClient.get().getIsActive())
+                .carId(optionalClient.get().getCar().getId()).isParked(optionalClient.get().getCar().getIsParked())
+                .build();
+        return currentClientDTO;
     }
 
     public Optional<Client> getCarOwner(Long carId) {

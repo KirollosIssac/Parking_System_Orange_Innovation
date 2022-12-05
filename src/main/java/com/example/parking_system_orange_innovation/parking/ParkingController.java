@@ -38,9 +38,9 @@ public class ParkingController {
         return new ResponseEntity<>("Parked successfully!", HttpStatus.OK);
     }
 
-    @PutMapping(path = "/endParking/{parkingId}")
-    public ResponseEntity<String> endParking(@PathVariable("parkingId") Long parkingId) {
-        parkingService.endParking(parkingId);
+    @PutMapping(path = "/endParking/{carId}")
+    public ResponseEntity<String> endParking(@PathVariable("carId") Long carId) {
+        parkingService.endParking(carId);
         return new ResponseEntity<>("Parking ended successfully!", HttpStatus.OK);
     }
 
