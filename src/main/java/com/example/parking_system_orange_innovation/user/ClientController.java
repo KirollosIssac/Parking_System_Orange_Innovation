@@ -87,8 +87,12 @@ public class ClientController {
 
     @PutMapping("/assignCar")
     public ResponseEntity<String> assignCar(@RequestBody ClientCarAssignmentDTO clientCarAssignmentDTO) {
-        clientService.assignCarToClient(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
-        return new ResponseEntity<>("Car assigned successfully!", HttpStatus.OK);
+        try {
+            clientService.assignCarToClient(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
+            return new ResponseEntity<>("Car assigned successfully!", HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/deleteClient/{clientId}")

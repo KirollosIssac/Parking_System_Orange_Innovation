@@ -34,4 +34,6 @@ public class Car {
 
     private Boolean isActive;
 
+    private Boolean isAssigned;
+
 }

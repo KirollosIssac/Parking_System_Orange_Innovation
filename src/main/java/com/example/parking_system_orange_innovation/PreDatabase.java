@@ -25,12 +25,16 @@ public class PreDatabase {
     private final ClientRepository clientRepository;
 
     @Autowired
+    private final AdminRepository adminRepository;
+
+    @Autowired
     private final PasswordEncoder passwordEncoder;
 
-    public PreDatabase(CarRepository carRepository, SlotRepository slotRepository, ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
+    public PreDatabase(CarRepository carRepository, SlotRepository slotRepository, ClientRepository clientRepository, AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         this.carRepository = carRepository;
         this.slotRepository = slotRepository;
         this.clientRepository = clientRepository;
+        this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -40,9 +44,9 @@ public class PreDatabase {
         return args -> {
 
             Car RECORD_3 = Car.builder().plateNumber("123").color("Black").isParked(false)
-                    .registrationDate(Instant.now()).isActive(true).build();
+                    .registrationDate(Instant.now()).isActive(true).isAssigned(true).build();
             Car RECORD_4 = Car.builder().plateNumber("456").color("White").isParked(false)
-                    .registrationDate(Instant.now()).isActive(true).build();
+                    .registrationDate(Instant.now()).isActive(true).isAssigned(true).build();
 
             carRepository.saveAll(List.of(RECORD_3, RECORD_4));
 
@@ -61,7 +65,10 @@ public class PreDatabase {
 
             slotRepository.saveAll(List.of(RECORD_5, RECORD_6));
 
+            Admin RECORD_7 = Admin.builder().name("Steven").userName("steven12").email("stevenmitchell@gmail.com")
+                    .password(passwordEncoder.encode("Steven")).role("ADMIN").build();
 
+            adminRepository.saveAll(List.of(RECORD_7));
 
         };
 

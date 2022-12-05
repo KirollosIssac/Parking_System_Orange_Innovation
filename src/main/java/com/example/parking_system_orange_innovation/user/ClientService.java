@@ -55,10 +55,15 @@ public class ClientService {
     }
 
     @Transactional
-    public void assignCarToClient(Long clientID, Long carID) {
+    public void assignCarToClient(Long clientID, Long carID) throws CarIsAlreadyAssignedToClientException {
         Optional<Client> optionalClient = clientRepository.findById(clientID);
         Optional<Car> optionalCar = carRepository.findById(carID);
-        optionalClient.get().setCar(optionalCar.get());
+        if (!optionalCar.get().getIsAssigned()) {
+            optionalClient.get().setCar(optionalCar.get());
+            optionalCar.get().setIsAssigned(true);
+        }
+        else
+            throw new CarIsAlreadyAssignedToClientException();
     }
 
     public Client addClient(Client client) throws UserNameExistsException, EmailExistsException, PhoneNumberExistsException {
@@ -71,6 +76,7 @@ public class ClientService {
         optionalClient = clientRepository.findClientByPhoneNumber(client.getPhoneNumber());
         if (optionalClient.isPresent())
             throw new PhoneNumberExistsException();
+        client.setRole("CLIENT");
         clientRepository.save(client);
         return client;
     }

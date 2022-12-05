@@ -47,6 +47,7 @@ public class CarService {
         car.setIsParked(false);
         car.setRegistrationDate(Instant.now());
         car.setIsActive(true);
+        car.setIsAssigned(false);
         carRepository.save(car);
         return car;
     }
