@@ -11,13 +11,12 @@ public class ScheduledTasks {
     @Autowired
     private final SlotService slotService;
 
-
     public ScheduledTasks(SlotService slotService) {
         this.slotService = slotService;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void Time_Is_12AM() {
+    public void timeIs12AM() {
         slotService.freeSlots();
     }
 

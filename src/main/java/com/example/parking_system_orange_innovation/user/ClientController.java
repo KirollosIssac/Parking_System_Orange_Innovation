@@ -43,17 +43,25 @@ public class ClientController {
 
     @GetMapping("/getClient")
     public ResponseEntity<ClientDTO> getClient(@RequestBody String userName) {
-        Optional<Client> client = clientService.getClient(userName);
-        ClientDTO clientDTO = ClientDTO.builder().id(client.get().getId())
-                .userName(client.get().getUserName()).role(client.get().getRole())
-                .isVIP(client.get().getIsVIP()).isActive(client.get().getIsActive()).build();
-        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+        try {
+            Optional<Client> client = clientService.getClient(userName);
+            ClientDTO clientDTO = ClientDTO.builder().id(client.get().getId())
+                    .userName(client.get().getUserName()).role(client.get().getRole())
+                    .isVIP(client.get().getIsVIP()).isActive(client.get().getIsActive()).build();
+            return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @GetMapping("/getCurrentUser")
     public ResponseEntity<CurrentClientDTO> getCurrentClient() {
-        return new ResponseEntity<>(clientService.getCurrentClient(SecurityContextHolder.getContext()
-                .getAuthentication().getName()), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(clientService.getCurrentClient(SecurityContextHolder.getContext()
+                    .getAuthentication().getName()), HttpStatus.OK);
+        } catch(ClientNotFoundException clientNotFoundException) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PostMapping("/addClient")
@@ -70,7 +78,7 @@ public class ClientController {
         try {
             clientService.addClient(client);
         } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
@@ -92,6 +100,16 @@ public class ClientController {
             return new ResponseEntity<>("Car assigned successfully!", HttpStatus.OK);
         } catch (Exception exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+        }
+    }
+
+    @PutMapping("/deassignCar")
+    public ResponseEntity<String> deassignCar(@RequestBody ClientCarAssignmentDTO clientCarAssignmentDTO) {
+        try {
+            clientService.deassignCar(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
+            return new ResponseEntity<>("Car deassigned successfully!", HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
     }
 

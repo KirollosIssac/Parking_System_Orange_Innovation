@@ -43,7 +43,7 @@ public class ParkingService {
     }
 
     @Transactional
-    public void addParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException {
+    public void startParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException {
         Optional<Slot> slot = slotService.getSlot(slotId);
         Optional<Car> car = carService.getCar(carId);
         slotService.assignSlot(slot.get().getId(), car.get().getId());

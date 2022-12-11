@@ -33,11 +33,15 @@ public class CarService {
     }
 
     @Transactional
-    public Optional<Car> updateCar(Car car) {
-        Optional<Car> existingCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
-        existingCar.get().setIsParked(car.getIsParked());
-        existingCar.get().setIsActive(car.getIsActive());
-        return existingCar;
+    public Optional<Car> updateCar(Car car) throws CarIsCurrentlyParkedException, CarNotFoundException {
+        Optional<Car> optionalCar = carRepository.findCarByPlateNumber(car.getPlateNumber());
+        if (!optionalCar.isPresent())
+            throw new CarNotFoundException();
+        if (optionalCar.get().getIsParked() && !car.getIsActive())
+            throw new CarIsCurrentlyParkedException();
+        optionalCar.get().setIsParked(car.getIsParked());
+        optionalCar.get().setIsActive(car.getIsActive());
+        return optionalCar;
     }
 
     public Car addCar(Car car) throws CarAlreadyExistsException {
@@ -53,7 +57,10 @@ public class CarService {
     }
 
     @Transactional
-    public void deleteCar(Long id) {
+    public void deleteCar(Long id) throws CarIsCurrentlyParkedException {
+        Optional<Car> optionalCar = carRepository.findById(id);
+        if (optionalCar.get().getIsParked())
+            throw new CarIsCurrentlyParkedException();
         clientService.deleteClientCar(id);
         carRepository.deleteCarById(id);
     }

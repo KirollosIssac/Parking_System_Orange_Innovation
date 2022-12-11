@@ -69,9 +69,9 @@ public class SlotService {
     @Transactional
     public Optional<Slot> assignSlot(Long slotId, Long carId) throws CarNotFoundException, VIPSlotException {
         Optional<Car> optionalCar = carRepository.findById(carId);
-        Optional<Slot> optionalSlot = slotRepository.findById(slotId);
         if (!optionalCar.isPresent())
             throw new CarNotFoundException();
+        Optional<Slot> optionalSlot = slotRepository.findById(slotId);
         if (!clientService.getCarOwner(carId).get().getIsVIP() && optionalSlot.get().getIsVIP())
             throw new VIPSlotException();
         optionalSlot.get().setCar(optionalCar.get());
@@ -81,19 +81,24 @@ public class SlotService {
     }
 
     @Transactional
-    public Optional<Slot> updateSlot(Slot slot) {
+    public void updateSlot(Slot slot) throws CarIsCurrentlyParkingHereException {
         Optional<Slot> optionalSlot = slotRepository.findById(slot.getId());
+        if (!optionalSlot.get().getIsAvailable())
+            throw new CarIsCurrentlyParkingHereException();
         optionalSlot.get().setIsAvailable(slot.getIsAvailable());
         optionalSlot.get().setIsVIP(slot.getIsVIP());
-        return optionalSlot;
     }
 
     @Transactional
-    public void deleteSlot(Long slotId) {
+    public void slotActivation(Long slotId, Boolean isActive) throws CarIsCurrentlyParkingHereException {
         Optional<Slot> optionalSlot = slotRepository.findById(slotId);
-        if(optionalSlot.get().getCar() != null)
-            optionalSlot.get().getCar().setIsParked(false);
-        slotRepository.deleteById(slotId);
+        if (isActive)
+            optionalSlot.get().setIsActive(true);
+        else {
+            if (!optionalSlot.get().getIsAvailable())
+                throw new CarIsCurrentlyParkingHereException();
+            optionalSlot.get().setIsActive(false);
+        }
     }
 
 }

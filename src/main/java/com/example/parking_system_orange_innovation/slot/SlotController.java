@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "slots")
@@ -48,8 +47,12 @@ public class SlotController {
 
     @PutMapping("/updateSlot")
     public ResponseEntity<String> updateSlots(@RequestBody Slot slot) {
-        slotService.updateSlot(slot);
-        return new ResponseEntity<>("Slot updated successfully!", HttpStatus.OK);
+        try {
+            slotService.updateSlot(slot);
+        } catch (Exception exception) {
+            return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity("Slot updated successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/assignSlot/{slotId}/{carId}")
@@ -57,15 +60,22 @@ public class SlotController {
         try {
             slotService.assignSlot(slotId, carId);
         } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>("Slot assigned successfully!", HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteSlot/{slotId}")
-    public ResponseEntity<String> deleteSlot(@PathVariable("slotId") Long slotId) {
-        slotService.deleteSlot(slotId);
-        return new ResponseEntity<>("Slot deleted successfully!", HttpStatus.OK);
+    @PutMapping("/slotActivation/{slotId}/{isActive}")
+    public ResponseEntity<String> deactivateSlot(@PathVariable("slotId") Long slotId, @PathVariable("isActive") Boolean isActive) {
+        try {
+            slotService.slotActivation(slotId, isActive);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+        }
+        if (isActive)
+            return new ResponseEntity<>("Slot activated successfully!", HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Slot deactivated successfully!", HttpStatus.OK);
     }
 
 }

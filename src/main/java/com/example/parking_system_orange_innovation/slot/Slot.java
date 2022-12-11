@@ -27,4 +27,6 @@ public class Slot {
 
     private Boolean isAvailable;
 
+    private Boolean isActive;
+
 }

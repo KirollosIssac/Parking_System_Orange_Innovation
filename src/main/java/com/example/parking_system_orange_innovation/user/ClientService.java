@@ -1,6 +1,8 @@
 package com.example.parking_system_orange_innovation.user;
 
 import com.example.parking_system_orange_innovation.car.Car;
+import com.example.parking_system_orange_innovation.car.CarIsNotAssignedToClientException;
+import com.example.parking_system_orange_innovation.car.CarNotFoundException;
 import com.example.parking_system_orange_innovation.car.CarRepository;
 import com.example.parking_system_orange_innovation.dto.CurrentClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,17 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Optional<Client> getClient(String userName) {
-        return clientRepository.findClientByUserName(userName);
+    public Optional<Client> getClient(String userName) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientRepository.findClientByUserName(userName);
+        if (!optionalClient.isPresent())
+            throw new ClientNotFoundException();
+        return optionalClient;
     }
 
-    public CurrentClientDTO getCurrentClient(String userName) {
+    public CurrentClientDTO getCurrentClient(String userName) throws ClientNotFoundException {
         Optional<Client> optionalClient = clientRepository.findClientByUserName(userName);
+        if (!optionalClient.isPresent())
+            throw new ClientNotFoundException();
         CurrentClientDTO currentClientDTO = CurrentClientDTO.builder().userId(optionalClient.get().getId())
                 .userName(userName).isVIP(optionalClient.get().getIsVIP()).isActive(optionalClient.get().getIsActive())
                 .carId(optionalClient.get().getCar().getId()).isParked(optionalClient.get().getCar().getIsParked())
@@ -66,7 +73,26 @@ public class ClientService {
             throw new CarIsAlreadyAssignedToClientException();
     }
 
-    public Client addClient(Client client) throws UserNameExistsException, EmailExistsException, PhoneNumberExistsException {
+    @Transactional
+    public void deassignCar(Long clientId, Long carId) throws ClientNotFoundException, CarNotFoundException,
+            ClientDoNotHaveCarException, CarIsNotAssignedToClientException, CarIsNotAssignedToThisClientException {
+        Optional<Client> optionalClient = clientRepository.findById(clientId);
+        if (!optionalClient.isPresent())
+            throw new ClientNotFoundException();
+        if (optionalClient.get().getCar() == null)
+            throw new ClientDoNotHaveCarException();
+        Optional<Car> optionalCar = carRepository.findById(carId);
+        if (!optionalCar.isPresent())
+            throw new CarNotFoundException();
+        if (!optionalCar.get().getIsAssigned())
+            throw new CarIsNotAssignedToClientException();
+        if (optionalClient.get().getCar().getId() != optionalCar.get().getId())
+            throw new CarIsNotAssignedToThisClientException();
+        optionalClient.get().setCar(null);
+        optionalCar.get().setIsAssigned(false);
+    }
+
+    public Client addClient(Client client) throws UserNameExistsException, EmailExistsException, PhoneNumberExistsException, InvalidDataException {
         Optional<Client> optionalClient = clientRepository.findClientByUserName(client.getUserName());
         if (optionalClient.isPresent())
             throw new UserNameExistsException();
@@ -76,6 +102,10 @@ public class ClientService {
         optionalClient = clientRepository.findClientByPhoneNumber(client.getPhoneNumber());
         if (optionalClient.isPresent())
             throw new PhoneNumberExistsException();
+        if (!client.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
+            throw new InvalidDataException();
+        if (!client.getPhoneNumber().matches("^01[0125][0-9]{8}$"))
+            throw new InvalidDataException();
         client.setRole("CLIENT");
         clientRepository.save(client);
         return client;

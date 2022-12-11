@@ -60,8 +60,8 @@ public class PreDatabase {
             clientRepository.saveAll(List.of(RECORD_1, RECORD_2));
 
 
-            Slot RECORD_5 = Slot.builder().isAvailable(true).isVIP(false).build();
-            Slot RECORD_6 = Slot.builder().isAvailable(true).isVIP(true).build();
+            Slot RECORD_5 = Slot.builder().isAvailable(true).isVIP(false).isActive(true).build();
+            Slot RECORD_6 = Slot.builder().isAvailable(true).isVIP(true).isActive(true).build();
 
             slotRepository.saveAll(List.of(RECORD_5, RECORD_6));
 

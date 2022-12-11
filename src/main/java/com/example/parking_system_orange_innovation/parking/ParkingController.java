@@ -32,9 +32,13 @@ public class ParkingController {
         return new ResponseEntity<>(parkingService.carHistory(carID), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/addParking")
-    public ResponseEntity<String> addParking(@RequestBody SlotCarDTO slotCarDTO) throws VIPSlotException, CarNotFoundException {
-        parkingService.addParking(slotCarDTO.getSlotId(), slotCarDTO.getCarId());
+    @PostMapping(path = "/startParking")
+    public ResponseEntity<String> startParking(@RequestBody SlotCarDTO slotCarDTO) throws VIPSlotException, CarNotFoundException {
+        try {
+            parkingService.startParking(slotCarDTO.getSlotId(), slotCarDTO.getCarId());
+        } catch(Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>("Parked successfully!", HttpStatus.OK);
     }
 

@@ -5,8 +5,6 @@ import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,21 +44,29 @@ public class CarController {
         try {
             carService.addCar(car);
         } catch (CarAlreadyExistsException exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>("Car added successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/updateCar")
     public ResponseEntity<String> updateCar(@RequestBody Car car) {
-        carService.updateCar(car);
+        try {
+            carService.updateCar(car);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>("Car updated successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteCar/{carId}")
     public ResponseEntity<String> deleteCar(@PathVariable("carId") Long carId) {
-        carService.deleteCar(carId);
-        return new ResponseEntity("Car deleted successfully!", HttpStatus.OK);
+        try {
+            carService.deleteCar(carId);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>("Car deleted successfully!", HttpStatus.OK);
     }
 
 }
