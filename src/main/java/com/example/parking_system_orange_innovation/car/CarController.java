@@ -1,5 +1,6 @@
 package com.example.parking_system_orange_innovation.car;
 
+import com.example.parking_system_orange_innovation.user.CarIsNotAssignedToClient;
 import com.example.parking_system_orange_innovation.user.Client;
 import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class CarController {
     }
 
     @GetMapping("/getCarOwner/{carId}")
-    public ResponseEntity<Optional<Client>> getCarOwner(@PathVariable("carId") Long carId) {
+    public ResponseEntity<Optional<Client>> getCarOwner(@PathVariable("carId") Long carId) throws CarIsNotAssignedToClient {
         Optional<Client> optionalClient = clientService.getCarOwner(carId);
         if (optionalClient.isPresent())
             return new ResponseEntity<>(optionalClient, HttpStatus.OK);

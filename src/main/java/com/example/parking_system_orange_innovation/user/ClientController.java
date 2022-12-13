@@ -46,8 +46,11 @@ public class ClientController {
         try {
             Optional<Client> client = clientService.getClient(userName);
             ClientDTO clientDTO = ClientDTO.builder().id(client.get().getId())
-                    .userName(client.get().getUserName()).role(client.get().getRole())
-                    .isVIP(client.get().getIsVIP()).isActive(client.get().getIsActive()).build();
+                    .userName(client.get().getUserName())
+                    .role(client.get().getRole())
+                    .isVIP(client.get().getIsVIP())
+                    .isActive(client.get().getIsActive())
+                    .build();
             return new ResponseEntity<>(clientDTO, HttpStatus.OK);
         } catch (Exception exception) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -88,7 +91,7 @@ public class ClientController {
         try {
             clientService.updateClient(client);
         } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>("User updated successfully!", HttpStatus.OK);
     }
@@ -99,7 +102,7 @@ public class ClientController {
             clientService.assignCarToClient(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
             return new ResponseEntity<>("Car assigned successfully!", HttpStatus.OK);
         } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
     }
 

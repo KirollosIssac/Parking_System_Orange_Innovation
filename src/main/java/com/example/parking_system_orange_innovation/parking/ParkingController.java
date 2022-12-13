@@ -2,6 +2,7 @@ package com.example.parking_system_orange_innovation.parking;
 
 import com.example.parking_system_orange_innovation.dto.SlotCarDTO;
 import com.example.parking_system_orange_innovation.slot.CarNotFoundException;
+import com.example.parking_system_orange_innovation.slot.SlotIsNotActiveException;
 import com.example.parking_system_orange_innovation.slot.VIPSlotException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,13 +44,13 @@ public class ParkingController {
     }
 
     @PutMapping(path = "/endParking/{carId}")
-    public ResponseEntity<String> endParking(@PathVariable("carId") Long carId) {
+    public ResponseEntity<String> endParking(@PathVariable("carId") Long carId) throws SlotIsNotActiveException {
         parkingService.endParking(carId);
         return new ResponseEntity<>("Parking ended successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/deleteParkings")
-    public ResponseEntity<String> deleteParkings() {
+    public ResponseEntity<String> deleteParkings() throws SlotIsNotActiveException {
         parkingService.deleteParkings();
         return new ResponseEntity<>("Parking history deleted successfully!", HttpStatus.OK);
     }

@@ -49,20 +49,20 @@ public class SlotController {
     public ResponseEntity<String> updateSlots(@RequestBody Slot slot) {
         try {
             slotService.updateSlot(slot);
+            return new ResponseEntity("Slot updated successfully!", HttpStatus.OK);
         } catch (Exception exception) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity("Slot updated successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/assignSlot/{slotId}/{carId}")
     public ResponseEntity<String> assignSlot(@PathVariable("slotId") Long slotId, @PathVariable("carId") Long carId) throws VIPSlotException, CarNotFoundException {
         try {
             slotService.assignSlot(slotId, carId);
+            return new ResponseEntity<>("Slot assigned successfully!", HttpStatus.OK);
         } catch (Exception exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>("Slot assigned successfully!", HttpStatus.OK);
     }
 
     @PutMapping("/slotActivation/{slotId}/{isActive}")

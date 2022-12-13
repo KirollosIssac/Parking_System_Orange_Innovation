@@ -1,10 +1,8 @@
 package com.example.parking_system_orange_innovation.user;
 
-import com.example.parking_system_orange_innovation.car.Car;
-import com.example.parking_system_orange_innovation.car.CarIsNotAssignedToClientException;
-import com.example.parking_system_orange_innovation.car.CarNotFoundException;
-import com.example.parking_system_orange_innovation.car.CarRepository;
+import com.example.parking_system_orange_innovation.car.*;
 import com.example.parking_system_orange_innovation.dto.CurrentClientDTO;
+import com.example.parking_system_orange_innovation.slot.CarIsNotActiveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,18 +51,26 @@ public class ClientService {
         return currentClientDTO;
     }
 
-    public Optional<Client> getCarOwner(Long carId) {
-        return clientRepository.findClientByCar_Id(carId);
-    }
-
-    public boolean existsByUserName(String userName) {
-        return clientRepository.existsByUserName(userName);
+    public Optional<Client> getCarOwner(Long carId) throws CarIsNotAssignedToClient {
+        Optional<Client> optionalClient = clientRepository.findClientByCar_Id(carId);
+        if (!optionalClient.isPresent())
+            throw new CarIsNotAssignedToClient();
+        return optionalClient;
     }
 
     @Transactional
-    public void assignCarToClient(Long clientID, Long carID) throws CarIsAlreadyAssignedToClientException {
+    public void assignCarToClient(Long clientID, Long carID) throws CarIsAlreadyAssignedToClientException,
+            ClientNotFoundException, ClientIsNotActiveException, CarNotFoundException, CarIsNotActiveException {
         Optional<Client> optionalClient = clientRepository.findById(clientID);
+        if (!optionalClient.isPresent())
+            throw new ClientNotFoundException();
+        if (!optionalClient.get().getIsActive())
+            throw new ClientIsNotActiveException();
         Optional<Car> optionalCar = carRepository.findById(carID);
+        if (!optionalCar.isPresent())
+            throw new CarNotFoundException();
+        if (!optionalCar.get().getIsActive())
+            throw new CarIsNotActiveException();
         if (!optionalCar.get().getIsAssigned()) {
             optionalClient.get().setCar(optionalCar.get());
             optionalCar.get().setIsAssigned(true);
@@ -107,28 +113,32 @@ public class ClientService {
         if (!client.getPhoneNumber().matches("^01[0125][0-9]{8}$"))
             throw new InvalidDataException();
         client.setRole("CLIENT");
+        client.setIsActive(true);
         clientRepository.save(client);
         return client;
     }
 
     @Transactional
-    public Optional<Client> updateClient(Client client) throws PhoneNumberExistsException {
-        Optional<Client> optionalClient;
-        optionalClient = clientRepository.findClientByUserName(client.getPhoneNumber());
-        if (optionalClient.isPresent())
-            throw new PhoneNumberExistsException();
-        optionalClient = clientRepository.findById(client.getId());
+    public Optional<Client> updateClient(Client client) throws PhoneNumberExistsException, CarIsCurrentlyParkedException {
+        Optional<Client> optionalClient = clientRepository.findById(client.getId());;
+//        optionalClient = clientRepository.findClientByUserName(client.getPhoneNumber());
+//        if (optionalClient.isPresent())
+//            throw new PhoneNumberExistsException();
+        if (optionalClient.get().getCar().getIsParked())
+            throw new CarIsCurrentlyParkedException();
         if (optionalClient.isPresent()) {
             optionalClient.get().setName(client.getName());
             optionalClient.get().setPhoneNumber(client.getPhoneNumber());
             optionalClient.get().setIsVIP(client.getIsVIP());
             optionalClient.get().setIsActive(client.getIsActive());
+            optionalClient.get().getCar().setIsActive(client.getIsActive());
         }
+        System.out.print(optionalClient);
         return optionalClient;
     }
 
     @Transactional
-    public void deleteClientCar(Long carId) {
+    public void deleteClientCar(Long carId) throws CarIsNotAssignedToClient {
         Optional<Client> client = getCarOwner(carId);
         if (client.isPresent())
             client.get().setCar(null);

@@ -3,6 +3,7 @@ package com.example.parking_system_orange_innovation.parking;
 import com.example.parking_system_orange_innovation.car.Car;
 import com.example.parking_system_orange_innovation.car.CarService;
 import com.example.parking_system_orange_innovation.slot.*;
+import com.example.parking_system_orange_innovation.user.CarIsNotAssignedToClient;
 import com.example.parking_system_orange_innovation.user.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,8 @@ public class ParkingService {
     }
 
     @Transactional
-    public void startParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException {
+    public void startParking(Long slotId, Long carId) throws VIPSlotException, CarNotFoundException,
+            CarIsNotActiveException, SlotIsNotActiveException, CarIsNotAssignedToClient {
         Optional<Slot> slot = slotService.getSlot(slotId);
         Optional<Car> car = carService.getCar(carId);
         slotService.assignSlot(slot.get().getId(), car.get().getId());
@@ -54,14 +56,14 @@ public class ParkingService {
     }
 
     @Transactional
-    public void endParking(Long carId) {
+    public void endParking(Long carId) throws SlotIsNotActiveException {
         Optional<Parking> parking = parkingRepository.findParkingByCarIdAndIsFinishedIsFalse(carId);
         slotService.freeSlot(parking.get().getSlot().getId());
         parking.get().setIsFinished(true);
         parking.get().setEndParking(Instant.now());
     }
 
-    public void deleteParkings() {
+    public void deleteParkings() throws SlotIsNotActiveException {
         List<Parking> parkings = parkingRepository.findAll();
         for (Parking parking : parkings) {
             Optional<Car> car = Optional.ofNullable(parking.getSlot().getCar());

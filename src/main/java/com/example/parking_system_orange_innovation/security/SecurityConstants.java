@@ -7,7 +7,7 @@ import java.security.Key;
 import java.time.Instant;
 
 public class SecurityConstants {
-    public static final long JWT_EXPIRATION = 700000000;
+    public static final long JWT_EXPIRATION = 720000000;
     public static final String JWT_SECRET = "klgfhdjklghfjkdhgjkfdhgjjsdokjfljkdfhgurdshnghjuvugjkdhbgjkdgksahfnskf" +
             "lkldfhgjkdfshfurdsilkfjkldsngkhfgljkdskljgikfjlkdngvbjghfdgndjckhbgjkfnjdghljdxkngjshdnljg";
 

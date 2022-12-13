@@ -8,8 +8,8 @@ import java.util.List;
 @Repository
 public interface SlotRepository extends JpaRepository<Slot, Long> {
 
-    List<Slot> findSlotsByIsAvailableIsTrueAndIsVIPIsTrue();
+    List<Slot> findSlotsByIsAvailableIsTrueAndIsActiveIsTrueAndIsVIPIsTrue();
 
-    List<Slot> findSlotsByIsAvailableIsTrueAndIsVIPIsFalse();
+    List<Slot> findSlotsByIsAvailableIsTrueAndIsActiveIsTrueAndIsVIPIsFalse();
 
 }
