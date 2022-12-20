@@ -33,7 +33,7 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Optional<Client> getClient(String userName) throws ClientNotFoundException {
+    public Optional<Client> getClientById(String userName) throws ClientNotFoundException {
         Optional<Client> optionalClient = clientRepository.findClientByUserName(userName);
         if (!optionalClient.isPresent())
             throw new ClientNotFoundException();

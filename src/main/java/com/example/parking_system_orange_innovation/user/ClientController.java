@@ -36,15 +36,15 @@ public class ClientController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/getClients")
+    @GetMapping("/getAllClients")
     public ResponseEntity<List<Client>> getAllClients() {
         return new ResponseEntity<>(clientService.getAllClients(), HttpStatus.OK);
     }
 
-    @GetMapping("/getClient")
-    public ResponseEntity<ClientDTO> getClient(@RequestBody String userName) {
+    @GetMapping("/getClientById")
+    public ResponseEntity<ClientDTO> getClientById(@RequestBody String userName) {
         try {
-            Optional<Client> client = clientService.getClient(userName);
+            Optional<Client> client = clientService.getClientById(userName);
             ClientDTO clientDTO = ClientDTO.builder().id(client.get().getId())
                     .userName(client.get().getUserName())
                     .role(client.get().getRole())

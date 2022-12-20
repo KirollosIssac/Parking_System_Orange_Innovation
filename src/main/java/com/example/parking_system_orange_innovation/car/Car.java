@@ -24,6 +24,7 @@ public class Car {
     )
     private Long id;
 
+    @Column(unique = true)
     private String plateNumber;
 
     private String color;

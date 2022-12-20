@@ -38,7 +38,7 @@ public class PreDatabase {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Bean
+    //@Bean
     CommandLineRunner commandLineRunner() {
 
         return args -> {
