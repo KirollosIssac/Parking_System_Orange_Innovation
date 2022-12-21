@@ -26,15 +26,6 @@ public class CarServiceTest {
     @Mock
     CarRepository carRepository;
 
-    @Mock
-    ClientRepository clientRepository;
-
-    @Mock
-    PasswordEncoder passwordEncoder;
-
-    @Mock
-    ClientService clientService;
-
     @InjectMocks
     CarService carService;
 

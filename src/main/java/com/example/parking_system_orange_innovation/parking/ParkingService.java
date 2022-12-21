@@ -56,11 +56,12 @@ public class ParkingService {
     }
 
     @Transactional
-    public void endParking(Long carId) throws SlotIsNotActiveException {
+    public Optional<Parking> endParking(Long carId) throws SlotIsNotActiveException {
         Optional<Parking> parking = parkingRepository.findParkingByCarIdAndIsFinishedIsFalse(carId);
         slotService.freeSlot(parking.get().getSlot().getId());
         parking.get().setIsFinished(true);
         parking.get().setEndParking(Instant.now());
+        return parking;
     }
 
     public void deleteParkings() throws SlotIsNotActiveException {
