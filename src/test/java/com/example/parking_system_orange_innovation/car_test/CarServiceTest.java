@@ -32,13 +32,13 @@ public class CarServiceTest {
 
     @Test
     public void updateCar() throws CarIsCurrentlyParkedException, CarNotFoundException {
-        Car car = Car.builder()
-                .plateNumber("111")
-                .color("Black")
-                .isAssigned(true)
-                .isActive(false)
-                .isParked(true)
-                .build();
+            Car car = Car.builder()
+                    .plateNumber("111")
+                    .color("Black")
+                    .isAssigned(true)
+                    .isActive(false)
+                    .isParked(true)
+                    .build();
         boolean thrown = false;
         Mockito.when(carRepository.findCarByPlateNumber("111")).thenReturn(Optional.of(car));
         try {

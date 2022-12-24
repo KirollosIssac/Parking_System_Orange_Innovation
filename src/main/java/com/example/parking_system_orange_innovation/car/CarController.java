@@ -28,13 +28,14 @@ public class CarController {
         this.clientService = clientService;
     }
 
-
     @GetMapping("/getCars")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Car>> getAllCars() {
         return new ResponseEntity<>(carService.getAllCars(), HttpStatus.OK);
     }
 
     @GetMapping("/getCarOwner/{carId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Optional<Client>> getCarOwner(@PathVariable("carId") Long carId) throws CarIsNotAssignedToClient {
         Optional<Client> optionalClient = clientService.getCarOwner(carId);
         if (optionalClient.isPresent())
@@ -43,6 +44,7 @@ public class CarController {
     }
 
     @PostMapping("/addCar")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> addCar(@RequestBody Car car) {
         try {
             carService.addCar(car);
@@ -53,6 +55,7 @@ public class CarController {
     }
 
     @PutMapping("/updateCar")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> updateCar(@RequestBody Car car) {
         try {
             carService.updateCar(car);
@@ -63,6 +66,7 @@ public class CarController {
     }
 
     @DeleteMapping("/deleteCar/{carId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteCar(@PathVariable("carId") Long carId) {
         try {
             carService.deleteCar(carId);

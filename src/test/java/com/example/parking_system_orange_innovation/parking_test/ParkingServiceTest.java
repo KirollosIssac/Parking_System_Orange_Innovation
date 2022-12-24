@@ -57,6 +57,6 @@ public class ParkingServiceTest {
         Mockito.when(parkingRepository.findParkingByCarIdAndIsFinishedIsFalse(car.getId())).thenReturn(Optional.of(parking));
         Optional<Parking> returnedParking = parkingService.endParking(car.getId());
         assertThat(returnedParking.get().getIsFinished()).isTrue();
-        assertThat(returnedParking.get().getEndParking()).isBefore(Instant.now());
+        assertThat(returnedParking.get().getEndParking()).isBeforeOrEqualTo(Instant.now());
     }
 }

@@ -6,6 +6,7 @@ import com.example.parking_system_orange_innovation.dto.CurrentClientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,11 +38,13 @@ public class ClientController {
     }
 
     @GetMapping("/getAllClients")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Client>> getAllClients() {
         return new ResponseEntity<>(clientService.getAllClients(), HttpStatus.OK);
     }
 
     @GetMapping("/getClientById")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ClientDTO> getClientById(@RequestBody String userName) {
         try {
             Optional<Client> client = clientService.getClientById(userName);
@@ -58,6 +61,7 @@ public class ClientController {
     }
 
     @GetMapping("/getCurrentUser")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public ResponseEntity<CurrentClientDTO> getCurrentClient() {
         try {
             return new ResponseEntity<>(clientService.getCurrentClient(SecurityContextHolder.getContext()
@@ -68,6 +72,7 @@ public class ClientController {
     }
 
     @PostMapping("/addClient")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> addClient(@RequestBody ClientDTO clientDTO) {
         Client client = Client.builder().name(clientDTO.getName())
                 .userName(clientDTO.getUserName())
@@ -87,6 +92,7 @@ public class ClientController {
     }
 
     @PutMapping("/updateClient")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> updateClient(@RequestBody Client client) {
         try {
             clientService.updateClient(client);
@@ -97,6 +103,7 @@ public class ClientController {
     }
 
     @PutMapping("/assignCar")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> assignCar(@RequestBody ClientCarAssignmentDTO clientCarAssignmentDTO) {
         try {
             clientService.assignCarToClient(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
@@ -107,6 +114,7 @@ public class ClientController {
     }
 
     @PutMapping("/deassignCar")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deassignCar(@RequestBody ClientCarAssignmentDTO clientCarAssignmentDTO) {
         try {
             clientService.deassignCar(clientCarAssignmentDTO.getClientId(), clientCarAssignmentDTO.getCarId());
@@ -117,6 +125,7 @@ public class ClientController {
     }
 
     @DeleteMapping("/deleteClient/{clientId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteClient(@PathVariable("clientId") Long clientId) {
         clientService.deleteClient(clientId);
         return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);

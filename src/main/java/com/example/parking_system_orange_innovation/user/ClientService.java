@@ -59,7 +59,7 @@ public class ClientService {
     }
 
     @Transactional
-    public void assignCarToClient(Long clientID, Long carID) throws CarIsAlreadyAssignedToClientException,
+    public Optional<Client> assignCarToClient(Long clientID, Long carID) throws CarIsAlreadyAssignedToClientException,
             ClientNotFoundException, ClientIsNotActiveException, CarNotFoundException, CarIsNotActiveException {
         Optional<Client> optionalClient = clientRepository.findById(clientID);
         if (!optionalClient.isPresent())
@@ -74,13 +74,14 @@ public class ClientService {
         if (!optionalCar.get().getIsAssigned()) {
             optionalClient.get().setCar(optionalCar.get());
             optionalCar.get().setIsAssigned(true);
+            return optionalClient;
         }
         else
             throw new CarIsAlreadyAssignedToClientException();
     }
 
     @Transactional
-    public void deassignCar(Long clientId, Long carId) throws ClientNotFoundException, CarNotFoundException,
+    public Optional<Client> deassignCar(Long clientId, Long carId) throws ClientNotFoundException, CarNotFoundException,
             ClientDoNotHaveCarException, CarIsNotAssignedToClientException, CarIsNotAssignedToThisClientException {
         Optional<Client> optionalClient = clientRepository.findById(clientId);
         if (!optionalClient.isPresent())
@@ -96,6 +97,7 @@ public class ClientService {
             throw new CarIsNotAssignedToThisClientException();
         optionalClient.get().setCar(null);
         optionalCar.get().setIsAssigned(false);
+        return optionalClient;
     }
 
     public Client addClient(Client client) throws UserNameExistsException, EmailExistsException, PhoneNumberExistsException, InvalidDataException {

@@ -52,21 +52,23 @@ public class SlotService {
     }
 
     @Transactional
-    public void freeSlots() {
+    public Optional<List<Slot>> freeSlots() {
         List<Slot> slots = slotRepository.findAll();
         for (Slot slot: slots) {
             if (slot.getIsActive()) slot.setIsAvailable(true);
         }
+        return Optional.of(slots);
     }
 
     @Transactional
-    public void freeSlot(Long slotId) throws SlotIsNotActiveException {
+    public Optional<Slot> freeSlot(Long slotId) throws SlotIsNotActiveException {
         Optional<Slot> slot = slotRepository.findById(slotId);
         if (!slot.get().getIsActive())
             throw new SlotIsNotActiveException();
         slot.get().getCar().setIsParked(false);
         slot.get().setCar(null);
         slot.get().setIsAvailable(true);
+        return slot;
     }
 
     @Transactional

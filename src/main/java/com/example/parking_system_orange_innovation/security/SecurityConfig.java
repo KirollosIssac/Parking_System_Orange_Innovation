@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig {
     @Autowired
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
@@ -39,17 +41,6 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/cars/**").hasAuthority("ADMIN")
-                .antMatchers("/clients/getClients").hasAuthority("ADMIN")
-                .antMatchers("/clients/getClient").hasAuthority("ADMIN")
-                .antMatchers("/slots/getSlots").hasAuthority("ADMIN")
-                .antMatchers("/slots/addSlot").hasAuthority("ADMIN")
-                .antMatchers("/slots/freeSlots").hasAuthority("ADMIN")
-                .antMatchers("/slots/updateSlot").hasAuthority("ADMIN")
-                .antMatchers("/slots/assignSlot/**").hasAuthority("ADMIN")
-                .antMatchers("/slots/deleteSlot").hasAuthority("ADMIN")
-                .antMatchers("/parkings/parkingsHistory").hasAuthority("ADMIN")
-                .antMatchers("/parkings/deleteParkings").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
 
                 .and()
